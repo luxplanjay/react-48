@@ -5,6 +5,7 @@
   "homepage": "https://goitacademy.github.io/react-homework-template/",
   "dependencies": {
     "@redux-devtools/extension": "^3.2.3",
+    "@reduxjs/toolkit": "^1.8.5",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
