@@ -1,15 +1,6 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { addTask, deleteTask, fetchTasks, toggleCompleted } from './operations';
 
-// const handlePending = state => {
-//   state.isLoading = true;
-// };
-
-// const handleRejected = (state, action) => {
-//   state.isLoading = false;
-//   state.error = action.payload;
-// };
-
 const actions = [fetchTasks, addTask, deleteTask, toggleCompleted];
 
 const handleFetchTasks = (state, action) => {
@@ -30,6 +21,20 @@ const handleToggle = (state, action) => {
   state.items.splice(idx, 1, action.payload);
 };
 
+const handleFulfilled = state => {
+  state.isLoading = false;
+  state.error = null;
+};
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
+
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState: {
@@ -45,53 +50,16 @@ const tasksSlice = createSlice({
       .addCase(toggleCompleted.fulfilled, handleToggle)
       .addMatcher(
         isAnyOf(...actions.map(action => action.fulfilled)),
-        state => {
-          state.isLoading = false;
-          state.error = null;
-        }
+        handleFulfilled
       )
-      .addMatcher(isAnyOf(...actions.map(action => action.pending)), state => {
-        state.isLoading = true;
-      })
+      .addMatcher(
+        isAnyOf(...actions.map(action => action.pending)),
+        handlePending
+      )
       .addMatcher(
         isAnyOf(...actions.map(action => action.rejected)),
-        (state, action) => {
-          state.isLoading = false;
-          state.error = action.payload;
-        }
+        handleRejected
       ),
-  // extraReducers: {
-  //   [fetchTasks.pending]: handlePending,
-  // [fetchTasks.fulfilled](state, action) {
-  //   state.isLoading = false;
-  //   state.error = null;
-  //   state.items = action.payload;
-  // },
-  //   [fetchTasks.rejected]: handleRejected,
-  //   [addTask.pending]: handlePending,
-  //   [addTask.fulfilled](state, action) {
-  // state.isLoading = false;
-  // state.error = null;
-  // state.items.push(action.payload);
-  //   },
-  //   [addTask.rejected]: handleRejected,
-  //   [deleteTask.pending]: handlePending,
-  //   [deleteTask.fulfilled](state, action) {
-  // state.isLoading = false;
-  // state.error = null;
-  // const idx = state.items.findIndex(item => item.id === action.payload.id);
-  // state.items.splice(idx, 1);
-  //   },
-  //   [deleteTask.rejected]: handleRejected,
-  //   [toggleCompleted.pending]: handlePending,
-  //   [toggleCompleted.fulfilled](state, action) {
-  // state.isLoading = false;
-  // state.error = null;
-  // const idx = state.items.findIndex(item => item.id === action.payload.id);
-  // state.items.splice(idx, 1, action.payload);
-  //   },
-  //   [toggleCompleted.rejected]: handleRejected,
-  // },
 });
 
 export const tasksReducer = tasksSlice.reducer;
